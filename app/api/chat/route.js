@@ -1,3 +1,27 @@
+function extractReply(data, fallbackText) {
+  const items = Array.isArray(data) ? data : [data];
+
+  for (const item of items) {
+    if (typeof item === "string" && item.trim()) {
+      return item;
+    }
+
+    const body = item?.json || item?.body || item;
+    const value =
+      body?.reply || body?.output || body?.message || body?.text || body?.response;
+
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+
+    if (value && typeof value === "object") {
+      return JSON.stringify(value);
+    }
+  }
+
+  return fallbackText?.trim() || "No response received";
+}
+
 export async function POST(request) {
   const webhookUrl = process.env.N8N_WEBHOOK_URL;
 
@@ -36,8 +60,7 @@ export async function POST(request) {
     }
 
     return Response.json({
-      reply:
-        data.reply || data.output || data.message || text || "No response received"
+      reply: extractReply(data, text)
     });
   } catch (error) {
     return Response.json(
