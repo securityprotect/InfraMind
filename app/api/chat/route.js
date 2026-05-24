@@ -54,8 +54,14 @@ export async function POST(request) {
 
     if (!response.ok) {
       return Response.json(
-        { error: data.error || "n8n webhook request failed" },
-        { status: response.status }
+        {
+          error:
+            data.message ||
+            data.error ||
+            "n8n webhook request failed. Check that the workflow is active and the production webhook URL is correct.",
+          n8nStatus: response.status
+        },
+        { status: 502 }
       );
     }
 

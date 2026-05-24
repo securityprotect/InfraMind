@@ -67,7 +67,7 @@ export default function Home() {
         ...prev,
         {
           sender: "bot",
-          text: "Unable to connect to support server. Please try again."
+          text: error.message || "Unable to connect to support server. Please try again."
         }
       ]);
     } finally {
