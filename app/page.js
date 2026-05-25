@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const [sessionId, setSessionId] = useState("");
   const [messages, setMessages] = useState([
     {
       sender: "bot",
@@ -17,13 +18,19 @@ export default function Home() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    const newSession = crypto.randomUUID();
+
+    setSessionId(newSession);
+  }, []);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth"
     });
   }, [messages]);
 
   async function sendMessage() {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !sessionId) return;
 
     const currentInput = input;
 
@@ -44,7 +51,7 @@ export default function Home() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          user: "test-user",
+          user: sessionId,
           message: currentInput
         })
       });
